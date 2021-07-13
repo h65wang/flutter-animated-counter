@@ -54,15 +54,17 @@ class AnimatedFlipCounter extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (prefix != null) Text(prefix!),
-          TweenAnimationBuilder(
-            // Animate the negative sign (-) appear and disappearing
-            duration: duration,
-            tween: Tween(end: value < 0 ? 1.0 : 0.0),
-            builder: (_, double v, __) => Center(
-              widthFactor: v,
-              child: Text(
-                "-",
-                style: TextStyle(color: color.withOpacity(v)),
+          ClipRect(
+            child: TweenAnimationBuilder(
+              // Animate the negative sign (-) appear and disappearing
+              duration: duration,
+              tween: Tween(end: value < 0 ? 1.0 : 0.0),
+              builder: (_, double v, __) => Center(
+                widthFactor: v,
+                child: Text(
+                  "-",
+                  style: TextStyle(color: color.withOpacity(v)),
+                ),
               ),
             ),
           ),

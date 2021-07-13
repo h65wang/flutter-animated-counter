@@ -6,13 +6,13 @@ An implicit animation widget that flips from one number to another.
 
 It can be useful to display information that's constantly changing.
 
-<img src="./gifs/demo.gif" height="300">
+<img src="https://github.com/h65wang/flutter-animated-counter/raw/master/gifs/demo.gif" height="300">
 
 ### Animated Counter
 
 Simply pass in a `value` and an optional `duration`, just like any other implicit animation widget in Flutter.
 
-<img src="./gifs/counter.gif" height="80">
+<img src="https://github.com/h65wang/flutter-animated-counter/raw/master/gifs/counter.gif" height="80">
 
 ```dart
 AnimatedFlipCounter(
@@ -25,7 +25,7 @@ AnimatedFlipCounter(
 
 Use `fractionDigits` to specify how many digits to show after the decimal point. It handles negative values as well.
 
-<img src="./gifs/percent.gif" height="120">
+<img src="https://github.com/h65wang/flutter-animated-counter/raw/master/gifs/percent.gif" height="120">
 
 ```dart
 AnimatedFlipCounter(
@@ -43,7 +43,7 @@ AnimatedFlipCounter(
 
 Use the familiar `TextStyle` parameter for styling, and use `prefix` and `suffix` for additional texts.
 
-<img src="./gifs/style.gif" height="60">
+<img src="https://github.com/h65wang/flutter-animated-counter/raw/master/gifs/style.gif" height="60">
 
 ```dart
 AnimatedFlipCounter(
