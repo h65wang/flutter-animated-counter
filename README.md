@@ -10,7 +10,7 @@ It can be useful to display information that's constantly changing.
 
 ### Animated Counter
 
-Simply pass in a `value` and an optional `duration`, just like any other implicit animation widget in Flutter.
+Simply pass in a `value` and an optional `duration` and `curve`, just like any other implicit animation widget in Flutter.
 
 <img src="https://github.com/h65wang/flutter-animated-counter/raw/master/gifs/counter.gif" height="80">
 
