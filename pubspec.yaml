@@ -1,5 +1,5 @@
 name: animated_flip_counter
-description: A widget that animates from one number to another.
+description: An implicit animation widget that flips from one number to another, with support for customize styles, decimals and negative values.
 version: 0.1.1
 homepage: https://github.com/h65wang/flutter-animated-counter
 
