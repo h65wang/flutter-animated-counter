@@ -6,7 +6,7 @@ class AnimatedFlipCounter extends StatelessWidget {
   ///
   /// When a new value is specified, the counter will automatically animate
   /// from its old value to the new value.
-  final double value;
+  final num value;
 
   /// The duration over which to animate the value of this counter.
   final Duration duration;
@@ -31,6 +31,13 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// The actual [value] will be rounded to the nearest digit.
   final int fractionDigits;
 
+  /// How many digits to display, before the decimal point.
+  ///
+  /// For example, `wholeDigits: 4` means it will pad `48` into `0048`.
+  /// Default value is `1`, setting it to `0` would turn `0.7` into `.7`.
+  /// If the actual [value] has more digits, this property will be ignored.
+  final int wholeDigits;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -40,7 +47,9 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.prefix,
     this.suffix,
     this.fractionDigits = 0,
+    this.wholeDigits = 1,
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
+        assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
 
   @override
@@ -69,8 +78,8 @@ class AnimatedFlipCounter extends StatelessWidget {
       digits.add(v);
       v = v ~/ 10;
     }
-    while (digits.length <= fractionDigits) {
-      digits.add(0); // add trailing zeroes if needed
+    while (digits.length < wholeDigits + fractionDigits) {
+      digits.add(0); // padding leading zeroes
     }
     digits = digits.reversed.toList(growable: false);
 

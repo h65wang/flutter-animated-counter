@@ -33,13 +33,26 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             AnimatedFlipCounter(
-              value: 2000 + _value,
+              value: 1000 + _value,
+            ),
+            AnimatedFlipCounter(
+              value: 1000 + _value,
+              wholeDigits: 4,
+              fractionDigits: 2,
             ),
             AnimatedFlipCounter(
               value: _value,
               duration: Duration(seconds: 1),
               curve: Curves.bounceOut,
-              textStyle: TextStyle(fontSize: 100, color: Colors.blue),
+              textStyle: TextStyle(fontSize: 40, color: Colors.blue),
+            ),
+            AnimatedFlipCounter(
+              value: _value,
+              duration: Duration(seconds: 1),
+              curve: Curves.bounceOut,
+              wholeDigits: 4,
+              fractionDigits: 2,
+              textStyle: TextStyle(fontSize: 40, color: Colors.blue),
             ),
             AnimatedFlipCounter(
               value: _value,
@@ -62,15 +75,28 @@ class _MyHomePageState extends State<MyHomePage> {
               value: _value + 0.48,
               fractionDigits: 2,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [0.07, 0.48, 1, 5, 24].map(_buildButton).toList(),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          setState(() => _value += 1.0);
-        },
-      ),
+    );
+  }
+
+  Widget _buildButton(num value) {
+    return Column(
+      children: [
+        ElevatedButton(
+          child: Text('+$value'),
+          onPressed: () => setState(() => _value += value),
+        ),
+        ElevatedButton(
+          child: Text('-$value'),
+          onPressed: () => setState(() => _value -= value),
+        ),
+      ],
     );
   }
 }
