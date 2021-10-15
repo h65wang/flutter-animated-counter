@@ -1,6 +1,11 @@
+## 0.2.0
+
+* Add `wholeDigits` property. E.g. `wholeDigits: 4` turns `48` into `0048`.
+
+
 ## 0.1.2
 
-* Add animation `curve` support
+* Add animation `curve` support.
 
 ## 0.1.1
 
