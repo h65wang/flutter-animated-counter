@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
               value: 1000 + _value,
               wholeDigits: 4,
               fractionDigits: 2,
+              thousandSeparator: ',',
             ),
             AnimatedFlipCounter(
               value: _value,

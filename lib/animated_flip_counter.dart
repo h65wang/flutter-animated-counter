@@ -38,6 +38,17 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// If the actual [value] has more digits, this property will be ignored.
   final int wholeDigits;
 
+  /// Insert a symbol between every 3 digits, for example: 1,000,000.
+  ///
+  /// Typical symbol is either a comma or a period, based on locale. Default
+  /// value is null, which disables this feature.
+  final String? thousandSeparator;
+
+  /// Insert a symbol between the integer part and the fractional part.
+  ///
+  /// Default value is a period. Can be changed to a comma for certain locale.
+  final String decimalSeparator;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -48,6 +59,8 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.suffix,
     this.fractionDigits = 0,
     this.wholeDigits = 1,
+    this.thousandSeparator,
+    this.decimalSeparator = '.',
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
         assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
@@ -83,6 +96,30 @@ class AnimatedFlipCounter extends StatelessWidget {
     }
     digits = digits.reversed.toList(growable: false);
 
+    // Generate the widgets needed for digits before the decimal point.
+    final integerWidgets = <Widget>[];
+    for (int i = 0; i < digits.length - fractionDigits; i++) {
+      final digit = _SingleDigitFlipCounter(
+        key: ValueKey(digits.length - i),
+        value: digits[i].toDouble(),
+        duration: duration,
+        curve: curve,
+        size: prototypeDigit.size,
+        color: color,
+      );
+      integerWidgets.add(digit);
+    }
+    // Insert "thousand separator" widgets if needed.
+    if (thousandSeparator != null) {
+      int counter = 0;
+      for (int i = integerWidgets.length; i > 0; i--) {
+        if (counter > 0 && counter % 3 == 0) {
+          integerWidgets.insert(i, Text(thousandSeparator!));
+        }
+        counter++;
+      }
+    }
+
     return DefaultTextStyle.merge(
       style: style,
       child: Row(
@@ -105,17 +142,9 @@ class AnimatedFlipCounter extends StatelessWidget {
             ),
           ),
           // Draw digits before the decimal point
-          for (int i = 0; i < digits.length - fractionDigits; i++)
-            _SingleDigitFlipCounter(
-              key: ValueKey(digits.length - i),
-              value: digits[i].toDouble(),
-              duration: duration,
-              curve: curve,
-              size: prototypeDigit.size,
-              color: color,
-            ),
+          ...integerWidgets,
           // Draw the decimal point
-          if (fractionDigits != 0) Text("."),
+          if (fractionDigits != 0) Text(decimalSeparator),
           // Draw digits after the decimal point
           for (int i = digits.length - fractionDigits; i < digits.length; i++)
             _SingleDigitFlipCounter(
