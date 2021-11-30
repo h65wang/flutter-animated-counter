@@ -1,7 +1,7 @@
 ## 0.2.1
 
 * Add `thousandSeparator` property. E.g. `thousandSeparator: ','` turns `1000` into `1,000`.
-* Add `decimalSeparator` property to custom the decimal point for certain locale.
+* Add `decimalSeparator` property to customize the decimal point for certain locale.
 
 ## 0.2.0
 
