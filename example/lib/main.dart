@@ -44,8 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
             AnimatedFlipCounter(
               value: _value,
               duration: Duration(seconds: 1),
-              curve: Curves.bounceOut,
-              textStyle: TextStyle(fontSize: 40, color: Colors.blue),
+              curve: Curves.elasticOut,
+              textStyle: TextStyle(fontSize: 60, color: Colors.blue),
             ),
             AnimatedFlipCounter(
               value: _value,

@@ -221,7 +221,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
       bottom: offset,
       child: Text(
         "$digit",
-        style: TextStyle(color: color.withOpacity(opacity)),
+        style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
       ),
     );
   }
