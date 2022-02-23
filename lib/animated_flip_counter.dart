@@ -49,6 +49,13 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// Default value is a period. Can be changed to a comma for certain locale.
   final String decimalSeparator;
 
+  /// How the digits should be placed. Can be used to control text alignment.
+  ///
+  /// Default value is `MainAxisAlignment.center`, which aligns the digits to
+  /// the center, similar to `TextAlign.center`. To mimic `TextAlign.start`,
+  /// set the value to `MainAxisAlignment.start`.
+  final MainAxisAlignment mainAxisAlignment;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -61,6 +68,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.wholeDigits = 1,
     this.thousandSeparator,
     this.decimalSeparator = '.',
+    this.mainAxisAlignment = MainAxisAlignment.center,
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
         assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
@@ -124,7 +132,7 @@ class AnimatedFlipCounter extends StatelessWidget {
       style: style,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: mainAxisAlignment,
         children: [
           if (prefix != null) Text(prefix!),
           ClipRect(
