@@ -1,3 +1,8 @@
+## 0.2.3
+
+* Fixed an issue when the text style is not opaque.
+* Added a `mainAxisAlignment` property, to control the alignment of the digits.
+
 ## 0.2.2
 
 * Fixed an issue with some animation curves (e.g. `Curves.elasticOut`).
