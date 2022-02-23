@@ -134,10 +134,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               tween: Tween(end: value < 0 ? 1.0 : 0.0),
               builder: (_, double v, __) => Center(
                 widthFactor: v,
-                child: Text(
-                  "-",
-                  style: TextStyle(color: color.withOpacity(v)),
-                ),
+                child: Opacity(opacity: v, child: Text("-")),
               ),
             ),
           ),
@@ -217,12 +214,25 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required double offset,
     required double opacity,
   }) {
+    // Try to avoid using the `Opacity` widget when possible, for performance.
+    final child;
+    if (color.opacity == 1) {
+      // If the text style does not involve transparency, we can modify
+      // the text color directly.
+      child = Text(
+        '$digit',
+        style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
+      );
+    } else {
+      // Otherwise, we have to use the `Opacity` widget.
+      child = Opacity(
+        opacity: opacity.clamp(0, 1),
+        child: Text('$digit'),
+      );
+    }
     return Positioned(
       bottom: offset,
-      child: Text(
-        "$digit",
-        style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
-      ),
+      child: child,
     );
   }
 }
