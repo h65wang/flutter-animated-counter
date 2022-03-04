@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Fixed an issue where some digits were misaligned for some fonts.
+
 ## 0.2.3
 
 * Fixed an issue when the text style is not opaque.

@@ -229,16 +229,22 @@ class _SingleDigitFlipCounter extends StatelessWidget {
       // the text color directly.
       child = Text(
         '$digit',
+        textAlign: TextAlign.center,
         style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
       );
     } else {
       // Otherwise, we have to use the `Opacity` widget.
       child = Opacity(
         opacity: opacity.clamp(0, 1),
-        child: Text('$digit'),
+        child: Text(
+          '$digit',
+          textAlign: TextAlign.center,
+        ),
       );
     }
     return Positioned(
+      left: 0,
+      right: 0,
       bottom: offset,
       child: child,
     );
