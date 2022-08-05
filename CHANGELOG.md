@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Added a `padding` property, to set padding around each digit. (Thank @alguintu for PR)
+
 ## 0.2.4
 
 * Fixed an issue where some digits were misaligned for some fonts.

@@ -1,5 +1,6 @@
-import 'package:flutter/widgets.dart';
 import 'dart:math' as math;
+
+import 'package:flutter/widgets.dart';
 
 class AnimatedFlipCounter extends StatelessWidget {
   /// The value of this counter.
@@ -56,12 +57,8 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// set the value to `MainAxisAlignment.start`.
   final MainAxisAlignment mainAxisAlignment;
 
-  /// Adds vertical space above and below the digits that allows you to
-  /// align the animation to a parent container's size to make the transition
-  /// look seamless.
-  ///
-  /// Default value is `0`, which does not change the default behaviour.
-  final double verticalSpace;
+  /// The padding around each of the digits, defaults to 0.
+  final EdgeInsets padding;
 
   const AnimatedFlipCounter({
     Key? key,
@@ -76,7 +73,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.thousandSeparator,
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
-    this.verticalSpace = 0,
+    this.padding = EdgeInsets.zero,
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
         assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
@@ -122,7 +119,7 @@ class AnimatedFlipCounter extends StatelessWidget {
         curve: curve,
         size: prototypeDigit.size,
         color: color,
-        verticalSpace: verticalSpace,
+        padding: padding,
       );
       integerWidgets.add(digit);
     }
@@ -168,7 +165,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               curve: curve,
               size: prototypeDigit.size,
               color: color,
-              verticalSpace: verticalSpace,
+              padding: padding,
             ),
           if (suffix != null) Text(suffix!),
         ],
@@ -183,7 +180,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final Curve curve;
   final Size size;
   final Color color;
-  final double verticalSpace;
+  final EdgeInsets padding;
 
   const _SingleDigitFlipCounter({
     Key? key,
@@ -192,7 +189,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required this.curve,
     required this.size,
     required this.color,
-    this.verticalSpace = 0,
+    required this.padding,
   }) : super(key: key);
 
   @override
@@ -204,8 +201,8 @@ class _SingleDigitFlipCounter extends StatelessWidget {
       builder: (_, double value, __) {
         final whole = value ~/ 1;
         final decimal = value - whole;
-        final w = size.width;
-        final h = size.height + verticalSpace;
+        final w = size.width + padding.horizontal;
+        final h = size.height + padding.vertical;
 
         return SizedBox(
           width: w,
@@ -245,7 +242,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
         style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
       );
     } else {
-      // Otherwise, we have to use the `Opacity` widget.
+      // Otherwise, we have to use the `Opacity` widget (less performant).
       child = Opacity(
         opacity: opacity.clamp(0, 1),
         child: Text(
@@ -257,7 +254,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     return Positioned(
       left: 0,
       right: 0,
-      bottom: offset + verticalSpace / 2,
+      bottom: offset + padding.bottom,
       child: child,
     );
   }

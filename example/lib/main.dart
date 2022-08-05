@@ -43,9 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             AnimatedFlipCounter(
               value: _value,
-              duration: Duration(seconds: 1),
+              duration: Duration(seconds: 2),
+              padding: EdgeInsets.symmetric(vertical: 8),
               curve: Curves.elasticOut,
-              textStyle: TextStyle(fontSize: 60, color: Colors.blue),
+              textStyle: TextStyle(fontSize: 60, color: Colors.pink),
             ),
             AnimatedFlipCounter(
               value: _value,
@@ -58,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             AnimatedFlipCounter(
               value: _value,
               prefix: "Level ",
+              padding: EdgeInsets.all(8),
               textStyle: TextStyle(
                 fontSize: 80,
                 fontWeight: FontWeight.bold,
