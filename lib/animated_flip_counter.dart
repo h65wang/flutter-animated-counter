@@ -56,6 +56,13 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// set the value to `MainAxisAlignment.start`.
   final MainAxisAlignment mainAxisAlignment;
 
+  /// Adds vertical space above and below the digits that allows you to
+  /// align the animation to a parent container's size to make the transition
+  /// look seamless.
+  ///
+  /// Default value is `0`, which does not change the default behaviour.
+  final double verticalSpace;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -69,6 +76,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.thousandSeparator,
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
+    this.verticalSpace = 0,
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
         assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
@@ -114,6 +122,7 @@ class AnimatedFlipCounter extends StatelessWidget {
         curve: curve,
         size: prototypeDigit.size,
         color: color,
+        verticalSpace: verticalSpace,
       );
       integerWidgets.add(digit);
     }
@@ -159,6 +168,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               curve: curve,
               size: prototypeDigit.size,
               color: color,
+              verticalSpace: verticalSpace,
             ),
           if (suffix != null) Text(suffix!),
         ],
@@ -173,6 +183,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final Curve curve;
   final Size size;
   final Color color;
+  final double verticalSpace;
 
   const _SingleDigitFlipCounter({
     Key? key,
@@ -181,6 +192,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required this.curve,
     required this.size,
     required this.color,
+    this.verticalSpace = 0,
   }) : super(key: key);
 
   @override
@@ -193,7 +205,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
         final whole = value ~/ 1;
         final decimal = value - whole;
         final w = size.width;
-        final h = size.height;
+        final h = size.height + verticalSpace;
 
         return SizedBox(
           width: w,
@@ -239,7 +251,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
       );
     }
     return Positioned(
-      bottom: offset,
+      bottom: offset + verticalSpace / 2,
       child: child,
     );
   }
