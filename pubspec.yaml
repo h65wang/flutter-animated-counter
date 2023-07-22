@@ -11,6 +11,14 @@ dependencies:
   flutter:
     sdk: flutter
 
+screenshots:
+  - description: 'Animated flip counter (decimal)'
+    path: 'gifs/percent.gif'
+  - description: 'Animated flip counter (integer)'
+    path: 'gifs/counter.gif'
+  - description: 'Demo flip counter in an app'
+    path: 'gifs/demo.gif'
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
