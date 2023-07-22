@@ -1,3 +1,7 @@
+## 0.2.6
+
+* Updated Flutter SDK version requirement to ">=2.12.0 <4.0.0".
+
 ## 0.2.5
 
 * Added a `padding` property, to set padding around each digit. (Thank @alguintu for PR)
