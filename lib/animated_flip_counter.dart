@@ -60,6 +60,8 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// The padding around each of the digits, defaults to 0.
   final EdgeInsets padding;
 
+  final String? prototypeSign;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -74,6 +76,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.padding = EdgeInsets.zero,
+    this.prototypeSign = '8' // number sign with the widest width
   })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
         assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
         super(key: key);
@@ -83,7 +86,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     final style = DefaultTextStyle.of(context).style.merge(textStyle);
     // Layout number "8" (probably the widest digit) to see its size
     final prototypeDigit = TextPainter(
-      text: TextSpan(text: "8", style: style),
+      text: TextSpan(text: prototypeSign, style: style),
       textDirection: TextDirection.ltr,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
     )..layout();
