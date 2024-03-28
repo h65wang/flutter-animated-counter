@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 
@@ -111,7 +112,13 @@ class AnimatedFlipCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = DefaultTextStyle.of(context).style.merge(textStyle);
+    // Merge the text style with the default style, and request tabular figures
+    // for consistent width of digits (if supported by the font).
+    final style = DefaultTextStyle.of(context)
+        .style
+        .merge(textStyle)
+        .merge(const TextStyle(fontFeatures: [FontFeature.tabularFigures()]));
+
     // Layout number "0" (probably the widest digit) to see its size
     final prototypeDigit = TextPainter(
       text: TextSpan(text: '0', style: style),
