@@ -9,8 +9,13 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// from its old value to the new value.
   final num value;
 
-  /// The duration over which to animate the value of this counter.
+  /// Animation duration for the value to change.
+  /// Default value is 300 ms.
   final Duration duration;
+
+  /// Animation duration for the negative sign to appear and disappear.
+  /// Default value is 150 ms, so it feels snappy.
+  final Duration negativeSignDuration;
 
   /// The curve to apply when animating the value of this counter.
   final Curve curve;
@@ -21,10 +26,14 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// be merged with the closest enclosing [DefaultTextStyle].
   final TextStyle? textStyle;
 
-  /// The text to display in front of the counter.
+  /// Optional text to display before the counter. e.g. `$` + `-100` = `$-100`.
   final String? prefix;
 
-  /// The text to display after the counter.
+  /// Optional text to display before the counter, but after the negative
+  /// sign if it's present. e.g. insert `$` to `-100` results in `-$100`.
+  final String? infix;
+
+  /// Optional text to display after the counter.
   final String? suffix;
 
   /// How many digits to display, after the decimal point.
@@ -76,16 +85,18 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// set the value to `MainAxisAlignment.start`.
   final MainAxisAlignment mainAxisAlignment;
 
-  /// The padding around each of the digits, defaults to 0.
+  /// Add padding for every digit, defaults is none.
   final EdgeInsets padding;
 
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
     this.duration = const Duration(milliseconds: 300),
+    this.negativeSignDuration = const Duration(milliseconds: 150),
     this.curve = Curves.linear,
     this.textStyle,
     this.prefix,
+    this.infix,
     this.suffix,
     this.fractionDigits = 0,
     this.wholeDigits = 1,
@@ -101,9 +112,9 @@ class AnimatedFlipCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = DefaultTextStyle.of(context).style.merge(textStyle);
-    // Layout number "8" (probably the widest digit) to see its size
+    // Layout number "0" (probably the widest digit) to see its size
     final prototypeDigit = TextPainter(
-      text: TextSpan(text: "8", style: style),
+      text: TextSpan(text: "0", style: style),
       textDirection: TextDirection.ltr,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
     )..layout();
@@ -194,10 +205,11 @@ class AnimatedFlipCounter extends StatelessWidget {
         mainAxisAlignment: mainAxisAlignment,
         children: [
           if (prefix != null) Text(prefix!),
+          // Draw the negative sign (-), if exists
           ClipRect(
             child: TweenAnimationBuilder(
-              // Animate the negative sign (-) appear and disappearing
-              duration: duration ~/ 2, // twice as fast as digits animation
+              // Animate the negative sign (-) appearing and disappearing
+              duration: negativeSignDuration,
               tween: Tween(end: value < 0 ? 1.0 : 0.0),
               builder: (_, double v, __) => Center(
                 widthFactor: v,
@@ -205,6 +217,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               ),
             ),
           ),
+          if (infix != null) Text(infix!),
           // Draw digits before the decimal point
           ...integerWidgets,
           // Draw the decimal point
@@ -234,7 +247,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final Size size;
   final Color color;
   final EdgeInsets padding;
-  final bool visible; // we might want to hide leading zeroes
+  final bool visible; // user can choose to hide leading zeroes
 
   const _SingleDigitFlipCounter({
     Key? key,
