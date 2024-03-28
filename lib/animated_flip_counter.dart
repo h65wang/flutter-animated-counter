@@ -37,7 +37,26 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// For example, `wholeDigits: 4` means it will pad `48` into `0048`.
   /// Default value is `1`, setting it to `0` would turn `0.7` into `.7`.
   /// If the actual [value] has more digits, this property will be ignored.
+  ///
+  /// See [hideLeadingZeroes] to hide these leading zeroes while maintaining
+  /// flipping animation when the number of digits changes, e.g. from 99 to 100.
   final int wholeDigits;
+
+  /// Whether to hide leading zeroes, useful when combined with [wholeDigits]
+  /// to create a smoother animation when the number of digits increases.
+  ///
+  /// For example, when animating from 99 to 500, the "5" is added as a new
+  /// digit, which would appear abruptly with no animation. By setting
+  /// [wholeDigits] to 3, we can make "99" into "099", which makes the animation
+  /// from 99 to 500 smoother. If you don't want to see "099", set this to true.
+  /// This way, we still do the preparation work of adding leading zeroes, but
+  /// nothing is visible to the user.
+  ///
+  /// Adding leading zeroes can have performance cost. It's advised to set
+  /// [wholeDigits] to account for a reasonable maximum value to cover most
+  /// cases. When the number of digits exceeds [wholeDigits], the extra
+  /// digits will still appear correctly, but without animation.
+  final bool hideLeadingZeroes;
 
   /// Insert a symbol between every 3 digits, for example: 1,000,000.
   ///
@@ -70,6 +89,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.suffix,
     this.fractionDigits = 0,
     this.wholeDigits = 1,
+    this.hideLeadingZeroes = false,
     this.thousandSeparator,
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
@@ -97,7 +117,12 @@ class AnimatedFlipCounter extends StatelessWidget {
     final int value = (this.value * math.pow(10, fractionDigits)).round();
 
     // Split the integer value into separate digits.
-    // For example, to draw 521, we split it into [5, 52, 521].
+    // For example, to draw 123, we split it into [1, 12, 123].
+    // This is because more significant digits do not care what happens to
+    // lower digits, but lower digits (like 3) need to know what happens to
+    // more significant digits. For example, 123 add 10 becomes 133. In this
+    // case, 1 stays the same, 2 flips into a 3, but 3 needs to flip 10 times
+    // to reach 3 again, instead of staying static.
     List<int> digits = value == 0 ? [0] : [];
     int v = value.abs();
     while (v > 0) {
@@ -120,13 +145,41 @@ class AnimatedFlipCounter extends StatelessWidget {
         size: prototypeDigit.size,
         color: color,
         padding: padding,
+        // We might want to hide leading zeroes. The way we split digits, only
+        // leading zeroes have "true zero" value. E.g. five hundred, 0500 is
+        // split into [0, 5, 50, 500]. Since 50 and 500 are not 0, they are
+        // always visible. But we should not show 0.48 as .48 so the last
+        // zero before decimal point is always visible.
+        visible: hideLeadingZeroes
+            ? digits[i] != 0 || i == digits.length - fractionDigits - 1
+            : true,
       );
       integerWidgets.add(digit);
     }
+
     // Insert "thousand separator" widgets if needed.
     if (thousandSeparator != null) {
+      // Find the first digit that's NOT a HIDDEN leading zero.
+      // For example, 000123, if user wants to hide leading zeroes, then
+      // the first visible digit is 1, which is at index 3.
+      // But if user does not want to hide leading zeroes, then the first
+      // visible digit is 0, which is at index 0.
+      // This is so we know when to stop inserting separators. We don't want
+      // something like ",,,123,456" if leading zeroes are hidden.
+      int firstVisibleDigitIndex = 0;
+      if (hideLeadingZeroes) {
+        // Find the first digit that's not zero.
+        firstVisibleDigitIndex = digits.indexWhere((d) => d != 0);
+        // If all digits are zero, then the first visible digit is the last one.
+        // For example, 0000, the first visible digit is at index 3.
+        if (firstVisibleDigitIndex == -1) {
+          firstVisibleDigitIndex = digits.length - 1;
+        }
+      }
+      // Insert a separator every 3 widgets counting backwards, until we reach
+      // the first digit that's still visible.
       int counter = 0;
-      for (int i = integerWidgets.length; i > 0; i--) {
+      for (int i = integerWidgets.length; i > firstVisibleDigitIndex; i--) {
         if (counter > 0 && counter % 3 == 0) {
           integerWidgets.insert(i, Text(thousandSeparator!));
         }
@@ -144,7 +197,7 @@ class AnimatedFlipCounter extends StatelessWidget {
           ClipRect(
             child: TweenAnimationBuilder(
               // Animate the negative sign (-) appear and disappearing
-              duration: duration,
+              duration: duration ~/ 2, // twice as fast as digits animation
               tween: Tween(end: value < 0 ? 1.0 : 0.0),
               builder: (_, double v, __) => Center(
                 widthFactor: v,
@@ -181,6 +234,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final Size size;
   final Color color;
   final EdgeInsets padding;
+  final bool visible; // we might want to hide leading zeroes
 
   const _SingleDigitFlipCounter({
     Key? key,
@@ -190,6 +244,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required this.size,
     required this.color,
     required this.padding,
+    this.visible = true,
   }) : super(key: key);
 
   @override
@@ -205,7 +260,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
         final h = size.height + padding.vertical;
 
         return SizedBox(
-          width: w,
+          width: visible ? w : 0,
           height: h,
           child: Stack(
             children: <Widget>[
