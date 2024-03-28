@@ -1,10 +1,20 @@
+## 0.3.0
+
+* Added a `hideLeadingZeroes` property. Useful when number of digits is expected to increase (e.g.
+  going from 99 to 100), you can use `wholeDigits: 3` to pad a leading zero, and this to hide padded
+  zeroes. Although invisible, they help deliver a smoother animation when new digits appear.
+* Added a `negativeSignDuration` property, to control the duration of the negative sign animation.
+  Default value is 150 ms, half of the duration of the main animation, so it feels snappier.
+* Added a `infix` property, to display a string between the negative sign and the number. For
+  example, setting `infix: '$'` will display `-$123.45`.
+
 ## 0.2.6
 
 * Updated Flutter SDK version requirement to ">=2.12.0 <4.0.0".
 
 ## 0.2.5
 
-* Added a `padding` property, to set padding around each digit. (Thank @alguintu for PR)
+* Added a `padding` property, to set an optional padding for each digit.
 
 ## 0.2.4
 
