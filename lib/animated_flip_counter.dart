@@ -105,8 +105,8 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.padding = EdgeInsets.zero,
-  })  : assert(fractionDigits >= 0, "fractionDigits must be non-negative"),
-        assert(wholeDigits >= 0, "wholeDigits must be non-negative"),
+  })  : assert(fractionDigits >= 0, 'fractionDigits must be non-negative'),
+        assert(wholeDigits >= 0, 'wholeDigits must be non-negative'),
         super(key: key);
 
   @override
@@ -114,14 +114,14 @@ class AnimatedFlipCounter extends StatelessWidget {
     final style = DefaultTextStyle.of(context).style.merge(textStyle);
     // Layout number "0" (probably the widest digit) to see its size
     final prototypeDigit = TextPainter(
-      text: TextSpan(text: "0", style: style),
+      text: TextSpan(text: '0', style: style),
       textDirection: TextDirection.ltr,
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: MediaQuery.textScalerOf(context),
     )..layout();
 
     // Find the text color (or red as warning). This is so we can avoid using
     // `Opacity` and `AnimatedOpacity` widget, for better performance.
-    final Color color = style.color ?? Color(0xffff0000);
+    final Color color = style.color ?? const Color(0xffff0000);
 
     // Convert the decimal value to int. For example, if we want 2 decimal
     // places, we will convert 5.21 into 521.
@@ -213,7 +213,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               tween: Tween(end: value < 0 ? 1.0 : 0.0),
               builder: (_, double v, __) => Center(
                 widthFactor: v,
-                child: Opacity(opacity: v, child: Text("-")),
+                child: Opacity(opacity: v, child: const Text('-')),
               ),
             ),
           ),
@@ -225,7 +225,7 @@ class AnimatedFlipCounter extends StatelessWidget {
           // Draw digits after the decimal point
           for (int i = digits.length - fractionDigits; i < digits.length; i++)
             _SingleDigitFlipCounter(
-              key: ValueKey("decimal$i"),
+              key: ValueKey('decimal$i'),
               value: digits[i].toDouble(),
               duration: duration,
               curve: curve,
@@ -300,7 +300,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required double opacity,
   }) {
     // Try to avoid using the `Opacity` widget when possible, for performance.
-    final child;
+    final Widget child;
     if (color.opacity == 1) {
       // If the text style does not involve transparency, we can modify
       // the text color directly.

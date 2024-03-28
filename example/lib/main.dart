@@ -2,21 +2,25 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -26,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("AnimatedFlipCounter Demo"),
+        title: const Text('AnimatedFlipCounter Demo'),
       ),
       body: Scrollbar(
         child: ListView(
@@ -58,41 +62,41 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             AnimatedFlipCounter(
               value: _value,
-              duration: Duration(seconds: 1),
-              padding: EdgeInsets.all(8),
+              duration: const Duration(seconds: 1),
+              padding: const EdgeInsets.all(8),
               curve: Curves.elasticOut,
               wholeDigits: 4,
               fractionDigits: 2,
               hideLeadingZeroes: true,
               thousandSeparator: ',',
-              textStyle: TextStyle(fontSize: 32, color: Colors.purple),
+              textStyle: const TextStyle(fontSize: 32, color: Colors.purple),
             ),
             AnimatedFlipCounter(
               value: _value,
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
               curve: Curves.bounceOut,
               wholeDigits: 4,
               fractionDigits: 2,
               thousandSeparator: ',',
-              textStyle: TextStyle(fontSize: 32, color: Colors.blue),
+              textStyle: const TextStyle(fontSize: 32, color: Colors.blue),
             ),
             AnimatedFlipCounter(
               value: _value,
               // Use "infix" to show a value between negative sign and number
-              infix: " \$",
+              infix: ' \$',
               fractionDigits: 2,
               wholeDigits: 8,
               hideLeadingZeroes: true,
               // Some languages like French use comma as decimal separator
               decimalSeparator: ',',
               thousandSeparator: '.',
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               textStyle: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
                 letterSpacing: -8.0,
                 color: _value < 0 ? Colors.red : Colors.green,
-                shadows: [
+                shadows: const [
                   BoxShadow(
                     color: Colors.yellow,
                     offset: Offset(2, 4),
