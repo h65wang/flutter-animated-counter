@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Fixed an issue where numbers were incorrectly reversed for RTL languages.
+
 ## 0.3.1
 
 * Replaced `textScaleFactor` with `textScaler` so text scaling works better on some devices.

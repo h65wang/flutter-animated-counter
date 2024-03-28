@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'dart:ui';
+import 'dart:ui' show FontFeature;
 
 import 'package:flutter/widgets.dart';
 
@@ -178,10 +178,10 @@ class AnimatedFlipCounter extends StatelessWidget {
     // Insert "thousand separator" widgets if needed.
     if (thousandSeparator != null) {
       // Find the first digit that's NOT a HIDDEN leading zero.
-      // For example, 000123, if user wants to hide leading zeroes, then
-      // the first visible digit is 1, which is at index 3.
-      // But if user does not want to hide leading zeroes, then the first
-      // visible digit is 0, which is at index 0.
+      // For example, "000123", if users want to hide leading zeroes, then
+      // the first visible digit is the "1", at index 3.
+      // But if users do not want to hide leading zeroes, then the first
+      // visible digit is the first "0", at index 0.
       // This is so we know when to stop inserting separators. We don't want
       // something like ",,,123,456" if leading zeroes are hidden.
       int firstVisibleDigitIndex = 0;
@@ -189,7 +189,7 @@ class AnimatedFlipCounter extends StatelessWidget {
         // Find the first digit that's not zero.
         firstVisibleDigitIndex = digits.indexWhere((d) => d != 0);
         // If all digits are zero, then the first visible digit is the last one.
-        // For example, 0000, the first visible digit is at index 3.
+        // E.g. the first visible digit for "0000" is the last "0" at index 3.
         if (firstVisibleDigitIndex == -1) {
           firstVisibleDigitIndex = digits.length - 1;
         }
@@ -210,6 +210,8 @@ class AnimatedFlipCounter extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: mainAxisAlignment,
+        // Even in RTL languages, numbers should always be displayed LTR.
+        textDirection: TextDirection.ltr,
         children: [
           if (prefix != null) Text(prefix!),
           // Draw the negative sign (-), if exists
