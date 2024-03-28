@@ -1,8 +1,15 @@
+## 0.3.1
+
+* Replaced `textScaleFactor` with `textScaler` so text scaling works better on some devices.
+* For fonts that have both tabular (monospaced) and proportional (varying width) figures, we start
+  requesting `tabular figures`, so that they work better with the animation on each digit.
+
 ## 0.3.0
 
-* Added a `hideLeadingZeroes` property. Useful when number of digits is expected to increase (e.g.
-  going from 99 to 100), you can use `wholeDigits: 3` to pad a leading zero, and this to hide padded
-  zeroes. Although invisible, they help deliver a smoother animation when new digits appear.
+* Added a `hideLeadingZeroes` property. Useful when number of digits is expected to grow (e.g.
+  going from 99 to 100), you can use `wholeDigits: 3` to pad a leading zero, and use this new
+  property to hide padded zeroes. Although not visible, the padded zeroes help improve animation
+  when new digits appear.
 * Added a `negativeSignDuration` property, to control the duration of the negative sign animation.
   Default value is 150 ms, half of the duration of the main animation, so it feels snappier.
 * Added a `infix` property, to display a string between the negative sign and the number. For
