@@ -28,25 +28,44 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("AnimatedFlipCounter Demo"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Scrollbar(
+        child: ListView(
           children: [
             AnimatedFlipCounter(
-              value: 1000 + _value,
+              value: _value,
             ),
             AnimatedFlipCounter(
-              value: 1000 + _value,
-              wholeDigits: 4,
+              value: 10000000 + _value,
+              fractionDigits: 2,
+              wholeDigits: 8,
+              hideLeadingZeroes: true,
+              thousandSeparator: ',',
+            ),
+            AnimatedFlipCounter(
+              value: 10000000 + _value,
+              fractionDigits: 2,
+              wholeDigits: 8,
+              hideLeadingZeroes: true,
+            ),
+            AnimatedFlipCounter(
+              value: 10000000 + _value,
               fractionDigits: 2,
               thousandSeparator: ',',
             ),
             AnimatedFlipCounter(
+              value: 10000000 + _value,
+              fractionDigits: 2,
+            ),
+            AnimatedFlipCounter(
               value: _value,
-              duration: Duration(seconds: 2),
-              padding: EdgeInsets.symmetric(vertical: 8),
+              duration: Duration(seconds: 1),
+              padding: EdgeInsets.all(8),
               curve: Curves.elasticOut,
-              textStyle: TextStyle(fontSize: 60, color: Colors.pink),
+              wholeDigits: 4,
+              fractionDigits: 2,
+              hideLeadingZeroes: true,
+              thousandSeparator: ',',
+              textStyle: TextStyle(fontSize: 32, color: Colors.purple),
             ),
             AnimatedFlipCounter(
               value: _value,
@@ -54,20 +73,28 @@ class _MyHomePageState extends State<MyHomePage> {
               curve: Curves.bounceOut,
               wholeDigits: 4,
               fractionDigits: 2,
-              textStyle: TextStyle(fontSize: 40, color: Colors.blue),
+              thousandSeparator: ',',
+              textStyle: TextStyle(fontSize: 32, color: Colors.blue),
             ),
             AnimatedFlipCounter(
               value: _value,
-              prefix: "Level ",
+              // Use "infix" to show a value between negative sign and number
+              infix: " \$",
+              fractionDigits: 2,
+              wholeDigits: 8,
+              hideLeadingZeroes: true,
+              // Some languages like French use comma as decimal separator
+              decimalSeparator: ',',
+              thousandSeparator: '.',
               padding: EdgeInsets.all(8),
               textStyle: TextStyle(
-                fontSize: 80,
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
                 letterSpacing: -8.0,
-                color: Colors.yellow,
+                color: _value < 0 ? Colors.red : Colors.green,
                 shadows: [
                   BoxShadow(
-                    color: Colors.orange,
+                    color: Colors.yellow,
                     offset: Offset(2, 4),
                     blurRadius: 4,
                   ),
@@ -75,12 +102,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             AnimatedFlipCounter(
-              value: _value + 0.48,
+              value: (_value * 10000) + 0.48,
               fractionDigits: 2,
+              wholeDigits: 8,
+              hideLeadingZeroes: true,
+              thousandSeparator: ',',
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Divider(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [0.07, 0.48, 1, 5, 24].map(_buildButton).toList(),
+              children: [0.01, 0.48, 1, 5, 400].map(_buildButtons).toList(),
             ),
           ],
         ),
@@ -88,13 +122,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildButton(num value) {
+  Widget _buildButtons(num value) {
     return Column(
       children: [
         ElevatedButton(
           child: Text('+$value'),
           onPressed: () => setState(() => _value += value),
         ),
+        const SizedBox(height: 8),
         ElevatedButton(
           child: Text('-$value'),
           onPressed: () => setState(() => _value -= value),
