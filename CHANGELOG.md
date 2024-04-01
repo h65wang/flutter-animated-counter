@@ -1,3 +1,8 @@
+# 0.3.3
+
+* Fixed a compatibility issue for those using older Flutter SDK (prior to 3.12.0) by reverting
+  the `textScaler` change made in 0.3.1.
+
 ## 0.3.2
 
 * Fixed an issue where numbers were incorrectly reversed for RTL languages.
