@@ -123,7 +123,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     final prototypeDigit = TextPainter(
       text: TextSpan(text: '0', style: style),
       textDirection: TextDirection.ltr,
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: MediaQuery.textScalerOf(context),
     )..layout();
 
     // Find the text color (or red as warning). This is so we can avoid using

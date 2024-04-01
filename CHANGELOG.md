@@ -1,4 +1,10 @@
-# 0.3.3
+## 0.3.4
+
+* Increased Flutter version requirement to v3.16.9. If you are using an older Flutter
+  version, you can still use version 0.3.3 of the package.
+* Replaced `textScaleFactor` with `textScaler` so text scaling works better on some devices.
+
+## 0.3.3
 
 * Fixed a compatibility issue for those using older Flutter SDK (prior to 3.12.0) by reverting
   the `textScaler` change made in 0.3.1.

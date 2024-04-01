@@ -1,11 +1,11 @@
 name: animated_flip_counter
 description: An implicit animation widget that flips from one number to another, with support for customize styles, decimals and negative values.
-version: 0.3.3
+version: 0.3.4
 homepage: https://github.com/h65wang/flutter-animated-counter
 
 environment:
-  sdk: ">=2.12.0 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=3.2.6 <4.0.0"
+  flutter: ">=3.16.9"
 
 dependencies:
   flutter:
