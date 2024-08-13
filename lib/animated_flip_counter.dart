@@ -68,6 +68,16 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// digits will still appear correctly, but without animation.
   final bool hideLeadingZeroes;
 
+  /// Whether to hide [fractionDigits] and its [decimalSeparator] when [value]
+  /// is a round number.
+  ///
+  /// For example, when animating from 35.27 to 35, hardcoding [fractionDigits]
+  /// to 2 displays 35.00 with the trailing 0s. Set this to true hides the
+  /// [decimalSeparator] and all fraction digits, rendering only 35. Fraction digits
+  /// still exist in the widget tree and will re-animate up accordingly when say
+  /// animating back from 35 to 35.27, but nothing is visible to the user on hide.
+  final bool hideFractionOnRoundValue;
+
   /// Insert a symbol between every 3 digits, for example: 1,000,000.
   ///
   /// Typical symbol is either a comma or a period, based on locale. Default
@@ -90,7 +100,7 @@ class AnimatedFlipCounter extends StatelessWidget {
   final EdgeInsets padding;
 
   const AnimatedFlipCounter({
-    Key? key,
+    super.key,
     required this.value,
     this.duration = const Duration(milliseconds: 300),
     this.negativeSignDuration = const Duration(milliseconds: 150),
@@ -102,13 +112,13 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.fractionDigits = 0,
     this.wholeDigits = 1,
     this.hideLeadingZeroes = false,
+    this.hideFractionOnRoundValue = false,
     this.thousandSeparator,
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.padding = EdgeInsets.zero,
   })  : assert(fractionDigits >= 0, 'fractionDigits must be non-negative'),
-        assert(wholeDigits >= 0, 'wholeDigits must be non-negative'),
-        super(key: key);
+        assert(wholeDigits >= 0, 'wholeDigits must be non-negative');
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +139,8 @@ class AnimatedFlipCounter extends StatelessWidget {
     // Find the text color (or red as warning). This is so we can avoid using
     // `Opacity` and `AnimatedOpacity` widget, for better performance.
     final Color color = style.color ?? const Color(0xffff0000);
+
+    final bool hideFraction = hideFractionOnRoundValue && (this.value - this.value.round()).abs() < 1e-10;
 
     // Convert the decimal value to int. For example, if we want 2 decimal
     // places, we will convert 5.21 into 521.
@@ -230,7 +242,7 @@ class AnimatedFlipCounter extends StatelessWidget {
           // Draw digits before the decimal point
           ...integerWidgets,
           // Draw the decimal point
-          if (fractionDigits != 0) Text(decimalSeparator),
+          if (fractionDigits != 0 && !hideFraction) Text(decimalSeparator),
           // Draw digits after the decimal point
           for (int i = digits.length - fractionDigits; i < digits.length; i++)
             _SingleDigitFlipCounter(
@@ -241,6 +253,7 @@ class AnimatedFlipCounter extends StatelessWidget {
               size: prototypeDigit.size,
               color: color,
               padding: padding,
+              visible: !hideFraction,
             ),
           if (suffix != null) Text(suffix!),
         ],
@@ -259,7 +272,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final bool visible; // user can choose to hide leading zeroes
 
   const _SingleDigitFlipCounter({
-    Key? key,
+    super.key,
     required this.value,
     required this.duration,
     required this.curve,
@@ -267,7 +280,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required this.color,
     required this.padding,
     this.visible = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
