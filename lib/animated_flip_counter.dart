@@ -37,6 +37,9 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// Optional text to display after the counter.
   final String? suffix;
 
+  /// Optional overflow strategy for the suffix text.
+  final TextOverflow? suffixOverflow;
+
   /// How many digits to display, after the decimal point.
   ///
   /// The actual [value] will be rounded to the nearest digit.
@@ -99,6 +102,7 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.prefix,
     this.infix,
     this.suffix,
+    this.suffixOverflow,
     this.fractionDigits = 0,
     this.wholeDigits = 1,
     this.hideLeadingZeroes = false,
@@ -242,7 +246,11 @@ class AnimatedFlipCounter extends StatelessWidget {
               color: color,
               padding: padding,
             ),
-          if (suffix != null) Text(suffix!),
+          if (suffix != null)
+            if (suffixOverflow != null)
+              Flexible(child: Text(suffix!, overflow: suffixOverflow))
+            else
+              Text(suffix!),
         ],
       ),
     );
