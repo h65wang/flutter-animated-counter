@@ -124,6 +124,7 @@ class AnimatedFlipCounter extends StatelessWidget {
       text: TextSpan(text: '0', style: style),
       textDirection: TextDirection.ltr,
       textScaler: MediaQuery.textScalerOf(context),
+      textHeightBehavior: DefaultTextHeightBehavior.maybeOf(context),
     )..layout();
 
     // Find the text color (or red as warning). This is so we can avoid using
