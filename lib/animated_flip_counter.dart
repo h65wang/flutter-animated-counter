@@ -89,6 +89,23 @@ class AnimatedFlipCounter extends StatelessWidget {
   /// Add padding for every digit, defaults is none.
   final EdgeInsets padding;
 
+  /// Whether to use smooth gradient masks for seamless transitions.
+  ///
+  /// When enabled (default), digits fade smoothly at the top and bottom
+  /// edges during transitions, creating a Robinhood-style effect.
+  /// Set to `false` for hard clipping (original behavior).
+  ///
+  /// Defaults to `true`.
+  final bool useSmoothMask;
+
+  /// The height of the fade zone as a fraction of digit height.
+  ///
+  /// For example, 0.3 means the top and bottom 30% of the digit height
+  /// will have a gradient fade effect. Must be between 0.0 and 0.5.
+  ///
+  /// Defaults to 0.3 (30%).
+  final double fadeZoneHeight;
+
   const AnimatedFlipCounter({
     Key? key,
     required this.value,
@@ -106,8 +123,12 @@ class AnimatedFlipCounter extends StatelessWidget {
     this.decimalSeparator = '.',
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.padding = EdgeInsets.zero,
+    this.useSmoothMask = true,
+    this.fadeZoneHeight = 0.3,
   })  : assert(fractionDigits >= 0, 'fractionDigits must be non-negative'),
         assert(wholeDigits >= 0, 'wholeDigits must be non-negative'),
+        assert(fadeZoneHeight >= 0.0 && fadeZoneHeight <= 0.5,
+            'fadeZoneHeight must be between 0.0 and 0.5'),
         super(key: key);
 
   @override
@@ -155,22 +176,21 @@ class AnimatedFlipCounter extends StatelessWidget {
     // Generate the widgets needed for digits before the decimal point.
     final integerWidgets = <Widget>[];
     for (int i = 0; i < digits.length - fractionDigits; i++) {
-      final digit = _SingleDigitFlipCounter(
-        key: ValueKey(digits.length - i),
-        value: digits[i].toDouble(),
-        duration: duration,
-        curve: curve,
-        size: prototypeDigit.size,
-        color: color,
-        padding: padding,
-        // We might want to hide leading zeroes. The way we split digits, only
-        // leading zeroes have "true zero" value. E.g. five hundred, 0500 is
-        // split into [0, 5, 50, 500]. Since 50 and 500 are not 0, they are
-        // always visible. But we should not show 0.48 as .48 so the last
-        // zero before decimal point is always visible.
-        visible: hideLeadingZeroes
-            ? digits[i] != 0 || i == digits.length - fractionDigits - 1
-            : true,
+      final digit = RepaintBoundary(
+        child: _SingleDigitFlipCounter(
+          key: ValueKey(digits.length - i),
+          value: digits[i].toDouble(),
+          duration: duration,
+          curve: curve,
+          size: prototypeDigit.size,
+          color: color,
+          padding: padding,
+          useSmoothMask: useSmoothMask,
+          fadeZoneHeight: fadeZoneHeight,
+          visible: hideLeadingZeroes
+              ? digits[i] != 0 || i == digits.length - fractionDigits - 1
+              : true,
+        ),
       );
       integerWidgets.add(digit);
     }
@@ -233,14 +253,18 @@ class AnimatedFlipCounter extends StatelessWidget {
           if (fractionDigits != 0) Text(decimalSeparator),
           // Draw digits after the decimal point
           for (int i = digits.length - fractionDigits; i < digits.length; i++)
-            _SingleDigitFlipCounter(
-              key: ValueKey('decimal$i'),
-              value: digits[i].toDouble(),
-              duration: duration,
-              curve: curve,
-              size: prototypeDigit.size,
-              color: color,
-              padding: padding,
+            RepaintBoundary(
+              child: _SingleDigitFlipCounter(
+                key: ValueKey('decimal$i'),
+                value: digits[i].toDouble(),
+                duration: duration,
+                curve: curve,
+                size: prototypeDigit.size,
+                color: color,
+                padding: padding,
+                useSmoothMask: useSmoothMask,
+                fadeZoneHeight: fadeZoneHeight,
+              ),
             ),
           if (suffix != null) Text(suffix!),
         ],
@@ -249,7 +273,7 @@ class AnimatedFlipCounter extends StatelessWidget {
   }
 }
 
-class _SingleDigitFlipCounter extends StatelessWidget {
+class _SingleDigitFlipCounter extends StatefulWidget {
   final double value;
   final Duration duration;
   final Curve curve;
@@ -257,6 +281,8 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   final Color color;
   final EdgeInsets padding;
   final bool visible; // user can choose to hide leading zeroes
+  final bool useSmoothMask;
+  final double fadeZoneHeight;
 
   const _SingleDigitFlipCounter({
     Key? key,
@@ -267,37 +293,128 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     required this.color,
     required this.padding,
     this.visible = true,
+    this.useSmoothMask = true,
+    this.fadeZoneHeight = 0.3,
   }) : super(key: key);
 
   @override
+  State<_SingleDigitFlipCounter> createState() =>
+      _SingleDigitFlipCounterState();
+}
+
+class _SingleDigitFlipCounterState extends State<_SingleDigitFlipCounter>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+    _animation = Tween<double>(
+      begin: widget.value,
+      end: widget.value,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(_SingleDigitFlipCounter oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update animation curve if changed
+    if (oldWidget.curve != widget.curve) {
+      _animation = Tween<double>(
+        begin: _animation.value,
+        end: widget.value,
+      ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve,
+      ));
+    }
+
+    // Update duration if changed
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+
+    // Animate to new value if changed
+    if (oldWidget.value != widget.value) {
+      _animation = Tween<double>(
+        begin: _animation.value,
+        end: widget.value,
+      ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve,
+      ));
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder(
-      tween: Tween(end: value),
-      duration: duration,
-      curve: curve,
-      builder: (_, double value, __) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (_, __) {
+        final value = _animation.value;
         final whole = value ~/ 1;
         final decimal = value - whole;
-        final w = size.width + padding.horizontal;
-        final h = size.height + padding.vertical;
+        final w = widget.size.width + widget.padding.horizontal;
+        final h = widget.size.height + widget.padding.vertical;
+
+        final digitStack = Stack(
+          children: <Widget>[
+            _buildSingleDigit(
+              digit: whole % 10,
+              offset: h * decimal,
+              opacity: 1 - decimal,
+            ),
+            _buildSingleDigit(
+              digit: (whole + 1) % 10,
+              offset: h * decimal - h,
+              opacity: decimal,
+            ),
+          ],
+        );
 
         return SizedBox(
-          width: visible ? w : 0,
+          width: widget.visible ? w : 0,
           height: h,
-          child: Stack(
-            children: <Widget>[
-              _buildSingleDigit(
-                digit: whole % 10,
-                offset: h * decimal,
-                opacity: 1 - decimal,
-              ),
-              _buildSingleDigit(
-                digit: (whole + 1) % 10,
-                offset: h * decimal - h,
-                opacity: decimal,
-              ),
-            ],
-          ),
+          child: widget.useSmoothMask
+              ? ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: const [
+                        Color(0x00000000),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFFFFF),
+                        Color(0x00000000),
+                      ],
+                      stops: [
+                        0.0,
+                        widget.fadeZoneHeight,
+                        1.0 - widget.fadeZoneHeight,
+                        1.0,
+                      ],
+                    ).createShader(bounds);
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: digitStack,
+                )
+              : ClipRect(child: digitStack),
         );
       },
     );
@@ -310,13 +427,15 @@ class _SingleDigitFlipCounter extends StatelessWidget {
   }) {
     // Try to avoid using the `Opacity` widget when possible, for performance.
     final Widget child;
-    if (color.opacity == 1) {
+    if (widget.color.a == 255) {
       // If the text style does not involve transparency, we can modify
       // the text color directly.
       child = Text(
         '$digit',
         textAlign: TextAlign.center,
-        style: TextStyle(color: color.withOpacity(opacity.clamp(0, 1))),
+        style: TextStyle(
+          color: widget.color.withValues(alpha: opacity.clamp(0, 1)),
+        ),
       );
     } else {
       // Otherwise, we have to use the `Opacity` widget (less performant).
@@ -331,7 +450,7 @@ class _SingleDigitFlipCounter extends StatelessWidget {
     return Positioned(
       left: 0,
       right: 0,
-      bottom: offset + padding.bottom,
+      bottom: offset + widget.padding.bottom,
       child: child,
     );
   }
